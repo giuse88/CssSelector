@@ -149,11 +149,20 @@ function parser(string) {
 	return tokens;
 }
 
-// Searchers
+//////////////////////////////////////////////////////////////////////
+//							SEARCHER 								//
+// The searcher consumes an array of tokens. It goes through the	//
+// dom tree to search for those element that satisfy the properties	//
+// specified in the token array.									//
+//																	//
+//////////////////////////////////////////////////////////////////////
 
 function searcher(tokens) {
 
-	// filter functions
+	/*****************************
+	 * 		
+	 */
+	
   function filterByTagName(documents, targetTagName) {
 
     if (!documents || documents.length < 1 || !targetTagName)
