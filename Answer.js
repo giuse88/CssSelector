@@ -110,11 +110,22 @@ function searcher(tokens) {
     if (!documents || documents.length < 1 || !targetTagName)
       return documents;
     //
-    console.log(targetTagName);
-    console.log(documents);
     var filteredDocument = Array.prototype.filter.call(documents, function (testElement) {
       console.log(testElement);
       return testElement.nodeName === targetTagName.toUpperCase();
+    });
+    //
+    return filteredDocument;
+  }
+
+  function filterById(documents, id) {
+
+    if (!documents || documents.length < 1 || !id)
+      return documents;
+    //
+    var filteredDocument = Array.prototype.filter.call(documents, function (testElement) {
+      console.log(testElement);
+      return testElement.id === id;
     });
     //
     return filteredDocument;
@@ -139,7 +150,12 @@ function getDOMElementsForASelector(selector, context) {
     var domElements = [];
     if (selector.id) {
       console.log("I am in id seciton");
-      domElements = [document.getElementById(selector.id)];
+     if ( context === document) {
+    	 var element = document.getElementById(selector.id);
+    	 domElements = element ?[element] : [];
+      }else  {
+    	  domElements = HTMLCollectionToArray(filterById(context.childNodes, selector.id)); 
+      }
       domElements = filterByTagName(filterByClassName(domElements, selector.className), selector.tagName);
     } else if (selector.tagName) {
       console.log("I am in tag seciton");

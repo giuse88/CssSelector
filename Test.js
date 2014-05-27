@@ -6,8 +6,15 @@ window.answerList = {
   D: $(".some_class"),
   E: $("input#some_id"),
   F: $("div#some_id.some_class"),
-  G: $("div.some_class#some_id")
-  // specific id and wrong class
+  G: $("div.some_class#some_id"),
+  H: $("#some_id.wrong_class"),
+  I: $('div #internal'),
+  J: $('div #class_A_level_1'), 
+  K: $('#l1 #l2'),			
+  L: $('.class_A_level_1 .class_A_level_2'),
+  M: $('.class_A_level_1 #l2.class_A_level_2 div.internal_1.internal_2'),
+  N: $('div.class_B'),
+  O: $('div.class_B.class_A_level_1')
 }
 
 var expectedResult = {
@@ -32,7 +39,17 @@ var expectedResult = {
   G: {
     DIV: 1
   },
-  questions: 7
+  H:{},
+  I:{
+	  DIV:1
+  },
+  J:{},
+  K:{ DIV:1 },
+  L:{ DIV:1 },
+  M:{ DIV:1 },
+  N:{ DIV:2 },
+  O:{ DIV:1 }, 
+  questions: 15
 }
 
 
