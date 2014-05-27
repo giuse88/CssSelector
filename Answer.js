@@ -89,7 +89,7 @@ function parser(string) {
 			if (!tag)
 				break;
 			var indexTag = tag.index;
-			var str = str.substring(indexTag + tag[0].length);
+			str = str.substring(indexTag + tag[0].length);
 			selectors.push(new Selector(type,tag[1]));
 		}
 
@@ -97,7 +97,7 @@ function parser(string) {
 	}
 
 	/*
-	 *  Helper function which builds a string with all class value found in
+	 *  Helper function which builds a string with all classes found in
 	 *  the array passed in input 
 	 */
 	
