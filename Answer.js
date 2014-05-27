@@ -159,104 +159,106 @@ function parser(string) {
 
 function searcher(tokens) {
 
-	/*****************************
-	 * 		
-	 */
+	/************************************************
+	*												* 
+	*				Filter functions				* 
+	*												* 
+	*************************************************/
 	
-  function filterByTagName(documents, targetTagName) {
+	function filterByTagName(documents, targetTagName) {
 
-    if (!documents || documents.length < 1 || !targetTagName)
-      return documents;
-    //
-    var filteredDocument = Array.prototype.filter.call(documents, function (testElement) {
-      console.log(testElement);
-      return testElement.nodeName === targetTagName.toUpperCase();
-    });
-    //
-    return filteredDocument;
-  }
+		if (!documents || documents.length < 1 || !targetTagName)
+			return documents;
+	
+		var filteredDocument = Array.prototype.filter.call(documents, function (testElement) {
+			return testElement.nodeName === targetTagName.toUpperCase();
+		});
+	
+		return filteredDocument;
+	}
 
-  function filterById(documents, id) {
+	function filterById(documents, id) {
 
-    if (!documents || documents.length < 1 || !id)
-      return documents;
-    //
-    var filteredDocument = Array.prototype.filter.call(documents, function (testElement) {
-      console.log(testElement);
-      return testElement.id === id;
-    });
-    //
-    return filteredDocument;
-  }
+		if (!documents || documents.length < 1 || !id)
+			return documents;
+		
+		var filteredDocument = Array.prototype.filter.call(documents, function (testElement) {
+				return testElement.id === id;
+		});
+		return filteredDocument;
+	}
 
-  function filterByClassName(documents, targetClassName) {
+	function filterByClassName(documents, targetClassName) {
 
-    if (!documents || documents.length < 1 || !targetClassName)
-      return documents;
-    var classNames = targetClassName.trim().split(' ');
-    //
-    var filteredDocument = Array.prototype.filter.call(documents, function (element) {
-      return matchClassNames(classNames, element.className.trim().split(' '));
-    });
-    //
-    return filteredDocument;
-  }
+		if (!documents || documents.length < 1 || !targetClassName)
+			return documents;
+		var classNames = targetClassName.trim().split(' ');
+		
+		var filteredDocument = Array.prototype.filter.call(documents, function (element) {
+				return matchClassNames(classNames, element.className.trim().split(' '));
+		});
+
+		return filteredDocument;
+	}
 
 
-function getDOMElementsForASelector(selector, context) {
+	function getDOMElementsForASelector(selector, context) {
 
-    var domElements = [];
-    if (selector.id) {
-      console.log("I am in id seciton");
-     if ( context === document) {
-    	 var element = document.getElementById(selector.id);
-    	 domElements = element ?[element] : [];
-      }else  {
-    	  domElements = HTMLCollectionToArray(filterById(context.childNodes, selector.id)); 
-      }
-      domElements = filterByTagName(filterByClassName(domElements, selector.className), selector.tagName);
-    } else if (selector.tagName) {
-      console.log("I am in tag seciton");
-      domElements =  HTMLCollectionToArray(context.getElementsByTagName(selector.tagName));
-      domElements = filterByClassName(domElements, selector.className);
-    } else if (selector.className) {
-      console.log("I am in class seciton");
-      domElements = HTMLCollectionToArray(context.getElementsByClassName(selector.className));
-    } else {
-      console.log("Selector empty weird");
-    }
-    return domElements;
-  }
+		var domElements = [];
 
-  function getDomElements(selector, contexts) {
-    console.log(contexts);
-    var elements =[];
-    for (var i =0;  i< contexts.length; i++) {
-     // console.log(getDOMElementsForASelector(selector, document));
-      var contextElement = getDOMElementsForASelector(selector, contexts[i]);
-      elements = elements.concat(contextElement);
-    }
-    return elements;
-  }
+		if (selector.id) {
 
-  // body
-  
-  var elements= [document];
+			if ( context === document) {
+				var element = document.getElementById(selector.id);
+				domElements = element ?[element] : [];
+			}else  {
+				domElements = HTMLCollectionToArray(filterById(context.childNodes, selector.id)); 
+			}
 
-  for ( var i=0; i< tokens.length; i++) {
-    console.log( "Token : " , tokens[i]);
-    console.log( "Elements : " ,  elements);
-    elements = getDomElements(tokens[i], elements);
-  }
+			domElements = filterByTagName(filterByClassName(domElements, selector.className), selector.tagName);
 
-  return elements.filter( onlyUnique );;
+		} else if (selector.tagName) {
+
+			domElements =  HTMLCollectionToArray(context.getElementsByTagName(selector.tagName));
+			domElements = filterByClassName(domElements, selector.className);
+
+		} else if (selector.className) {
+
+			domElements = HTMLCollectionToArray(context.getElementsByClassName(selector.className));
+
+		} else {
+			console.log("Selector empty");
+		}
+
+		return domElements;
+	}
+
+	function getDomElements(selector, contexts) {
+		var elements =[];
+		for (var i =0;  i< contexts.length; i++) {
+			var contextElement = getDOMElementsForASelector(selector, contexts[i]);
+			elements = elements.concat(contextElement);
+		}
+		return elements;
+	}
+
+	/************************************************
+	*												* 
+	*				Searcher body					* 
+	*												* 
+	*************************************************/
+	
+	
+	var elements= [document];
+
+	for ( var i=0; i< tokens.length; i++) {
+		elements = getDomElements(tokens[i], elements);
+	}
+
+	return elements.filter( onlyUnique );;
 
 }
 
-	/////////////////////////////////
-	//
-	// Selector engine
-	//////////////////////////////////
 
 	var CssSelectorEngine =  function (selector) {
 				return searcher(parser(selector));
