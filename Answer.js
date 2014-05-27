@@ -1,85 +1,129 @@
 var $ = function (selector) {
-  var tokens = parser(selector);
-  return searcher(tokens);
+	var tokens = parser(selector);
+	return searcher(tokens);
 }
+
+//////////////////////////////////////////////////////////////////////
+//								PARSER 								//
+// The parser takes in input a string representing a CSS selector	//
+// and returns an array of tokens with the following structure :	//
+// 		token = {													//
+//			tagName : a name of a HTML tag,							//
+//			id 		: id specified 									//
+//			class   : CSS classes specified							//
+//		}															//
+// All previous element may be empty/ null.							//
+//																	//
+// For example : 													//
+//  div.css_class#id is transformed to 								//
+//	token = {														//
+//		tagName : 'div',						//
+//		id 		: 'id',						//
+//		class 	: 'css_class'						//
+//	}						//
+//////////////////////////////////////////////////////////////////////
+
 
 function parser(string) {
 
-  var REG =  {
-    'id'    : /#((?:[\w\u00c0-\uFFFF-]|\\.)+)/,
-    'class' : /\.((?:[\w\u00c0-\uFFFF-]|\\.)+)/,
-    'tag'   : /^((?:[\w\u00c0-\uFFFF\*-]|\\.)+)/
-  };
+	var REG =  {
+			'id'	: /#((?:[\w\u00c0-\uFFFF-]|\\.)+)/,
+			'class'	: /\.((?:[\w\u00c0-\uFFFF-]|\\.)+)/,
+			'tag'	: /^((?:[\w\u00c0-\uFFFF\*-]|\\.)+)/
+	};
 
-  function findSelectors(type, str) {
+	/*
+	 * Helper object to handle Css selector 
+	 * 	type : identifies the selector type. It can be 'id', 'class' or 'tag'
+	 * 	value : contain the value of the selector. For example, the 'id' name or the class name.
+	 *  
+	 *  id = 'this_is_an_id' is converted in { type : 'id', value: 'this_is_an_id'};
+	 *  class = 'this_is_a_class' is converted in { type : 'class', value: 'this_is_a_class'};
+	 * 
+	 */
+	
+	function Selector(type, value) {
+		this.type = type;
+		this.value = value;
+	}
 
-    if (!str)
-      return [];
+	/*
+	 * Search selectors of a given 'type' in a string 'str' 
+	 */
 
-    var selectors = [];
+	function findSelectors(type, str) {
+		
+		if (!str)
+			return [];
 
-    while (str) {
-      str = str.trim();
-      var tag = REG[type].exec(str);
-      if (!tag)
-        break;
-      var indexTag = tag.index;
-      var str = str.substring(indexTag + tag[0].length);
-      selectors.push(new Selector(type,tag[1]));
-    }
+		var selectors = [];
 
-    return selectors;
-  }
+		while (str) {
+			str = str.trim();
+			var tag = REG[type].exec(str);
+			if (!tag)
+				break;
+			var indexTag = tag.index;
+			var str = str.substring(indexTag + tag[0].length);
+			selectors.push(new Selector(type,tag[1]));
+		}
 
-  function mergeClassNames(classComponents) {
+		return selectors;
+	}
 
-    if ( !classComponents || classComponents.length < 1)
-      return null;
-//
-    var mergedNames = "";
-    for ( var i =0;  i < classComponents.length; i++)
-      if ( classComponents[i].type === "class" )
-        mergedNames += classComponents[i].value + " ";
-//
-    return mergedNames.trim();
-  }
+	/*
+	 *  Helper function which builds a string with all class value found in
+	 *  the array passed in input 
+	 */
+	
+	function mergeClassNames(classComponents) {
 
-  function getFirstValueFromArray(idArray) {
-    if (idArray && idArray.length > 0)
-      return idArray[0].value;
-    return null;
-  }
+		if ( !classComponents || classComponents.length < 1)
+			return null;
 
-  function Selector(type, value) {
-    this.type = type;
-    this.value = value;
-  }
+		var mergedNames = "";
+		for ( var i =0;  i < classComponents.length; i++)
+				if ( classComponents[i].type === "class" )
+					mergedNames += classComponents[i].value + " ";
 
-//  console.log("Selector Parser ");
-  var nextIndex = 0;
-  string = string.trim();
-  var tokens = string.split(' ');
-  // filter out empty string
-  tokens = tokens.filter(function (token) {return token.trim()});
-  var selectors = [];
+		return mergedNames.trim();
+	}
 
-  for ( var i = 0; i< tokens.length; i++ ) {
-// retrieves the compoent of a selector
-    var tagArray = findSelectors("tag",tokens[i]);
-    var idArray  = findSelectors("id",tokens[i]);
-    var classArray = findSelectors("class", tokens[i]);
-// create the selector
-    var selector = {
-      "tagName": getFirstValueFromArray(tagArray),
-      "id" : getFirstValueFromArray(idArray),
-      "className" : mergeClassNames(classArray)
-    }
-//save the selector for this element
-    selectors.push(selector)
-  }
+	function getFirstValueFromArray(idArray) {
+		if (idArray && idArray.length > 0)
+			return idArray[0].value;
+		return null;
+	}
+	
+	/***************************
+	 *  Body parser				* 
+	 ****************************/
 
-  return selectors;
+	string = string.trim();
+	var tokens = string.split(' ');	
+	// filter out empty string
+	tokens = tokens.filter(function (token) {
+		return token.trim()
+	});
+	var selectors = [];
+
+	for ( var i = 0; i< tokens.length; i++ ) {
+		var tagArray = findSelectors("tag",tokens[i]);
+		var idArray  = findSelectors("id",tokens[i]);
+		var classArray = findSelectors("class", tokens[i]);
+		// create the selector
+		var selector = {
+				"tagName": getFirstValueFromArray(tagArray),
+				"id" : getFirstValueFromArray(idArray),
+				"className" : mergeClassNames(classArray)
+		}
+		selectors.push(selector)
+	}
+
+	return selectors;
 }
+
+
 
   function HTMLCollectionToArray(collection) {
     var array = [];
