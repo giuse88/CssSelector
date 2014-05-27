@@ -1,4 +1,4 @@
-var $1 = function (selector) {
+var $ = function (selector) {
   var tokens = parser(selector);
   return searcher(tokens);
 }
@@ -59,9 +59,9 @@ function parser(string) {
   var nextIndex = 0;
   string = string.trim();
   var tokens = string.split(' ');
-//  console.log(tokens);
+  // filter out empty string
+  tokens = tokens.filter(function (token) {return token.trim()});
   var selectors = [];
-
 
   for ( var i = 0; i< tokens.length; i++ ) {
 // retrieves the compoent of a selector

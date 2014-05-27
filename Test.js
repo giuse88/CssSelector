@@ -11,10 +11,12 @@ window.answerList = {
   I: $('div #internal'),
   J: $('div #class_A_level_1'), 
   K: $('#l1 #l2'),			
-  L: $('.class_A_level_1 .class_A_level_2'),
+  L: $('.class_A_level_1   .class_A_level_2'),
   M: $('.class_A_level_1 #l2.class_A_level_2 div.internal_1.internal_2'),
   N: $('div.class_B'),
-  O: $('div.class_B.class_A_level_1')
+  O: $('div.class_B.class_A_level_1'),
+  P : $('div #l1 #l2'),
+  Q : $(' div    #l2 ')
 }
 
 var expectedResult = {
@@ -49,7 +51,9 @@ var expectedResult = {
   M:{ DIV:1 },
   N:{ DIV:2 },
   O:{ DIV:1 }, 
-  questions: 15
+  P:{ }, 
+  Q:{ DIV:1 }, 
+  questions: 17
 }
 
 
