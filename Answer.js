@@ -8,19 +8,19 @@ var $ = function (selector) {
 // The parser takes in input a string representing a CSS selector	//
 // and returns an array of tokens with the following structure :	//
 // 		token = {													//
-//			tagName : a name of a HTML tag,							//
-//			id 		: id specified 									//
-//			class   : CSS classes specified							//
+//			tagName 	: a name of a HTML tag,						//
+//			id 			: id specified 								//
+//			className	: CSS classes specified						//
 //		}															//
 // All previous element may be empty/ null.							//
 //																	//
 // For example : 													//
 //  div.css_class#id is transformed to 								//
 //	token = {														//
-//		tagName : 'div',						//
-//		id 		: 'id',						//
-//		class 	: 'css_class'						//
-//	}						//
+//		tagName : 'div',											//
+//		id 		: 'id',												//
+//		class 	: 'css_class'										//
+//	}																//
 //////////////////////////////////////////////////////////////////////
 
 
@@ -95,32 +95,34 @@ function parser(string) {
 		return null;
 	}
 	
-	/***************************
-	 *  Body parser				* 
-	 ****************************/
+	/************************************************
+	*												* 
+	*					Body parser					* 
+	*												* 
+	*************************************************/
 
 	string = string.trim();
-	var tokens = string.split(' ');	
+	var rawTokens = string.split(' ');	
 	// filter out empty string
-	tokens = tokens.filter(function (token) {
+	rawTokens = rawTokens.filter(function (token) {
 		return token.trim()
 	});
-	var selectors = [];
+	var tokens = [];
 
-	for ( var i = 0; i< tokens.length; i++ ) {
-		var tagArray = findSelectors("tag",tokens[i]);
-		var idArray  = findSelectors("id",tokens[i]);
-		var classArray = findSelectors("class", tokens[i]);
+	for ( var i = 0; i< rawTokens.length; i++ ) {
+		var tagArray = findSelectors("tag",rawTokens[i]);
+		var idArray  = findSelectors("id",rawTokens[i]);
+		var classArray = findSelectors("class", rawTokens[i]);
 		// create the selector
-		var selector = {
+		var token = {
 				"tagName": getFirstValueFromArray(tagArray),
 				"id" : getFirstValueFromArray(idArray),
 				"className" : mergeClassNames(classArray)
 		}
-		selectors.push(selector)
+		tokens.push(token)
 	}
 
-	return selectors;
+	return tokens;
 }
 
 
