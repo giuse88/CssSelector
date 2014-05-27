@@ -1,6 +1,31 @@
-var $ = function (selector) {
-	var tokens = parser(selector);
-	return searcher(tokens);
+var $ = (function(){
+
+//////////////////////////////////////////////////////////////////////
+//																	//
+//							HELPER METHODS							//
+//																	//
+//////////////////////////////////////////////////////////////////////
+
+function HTMLCollectionToArray(collection) {
+	var array = [];
+	for ( var i = 0; i < collection.length; i++ )
+		array.push(collection[i]);
+	return array;
+}
+
+function onlyUnique(value, index, self) {
+	return self.indexOf(value) === index;
+ }
+
+
+function matchClassNames(descriptionClassNames, elementClassNames) {
+
+	for (var i = 0; i < descriptionClassNames.length; i++) {
+		if (elementClassNames.indexOf(descriptionClassNames[i]) < 0)
+			return false;
+	}
+
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -113,7 +138,6 @@ function parser(string) {
 		var tagArray = findSelectors("tag",rawTokens[i]);
 		var idArray  = findSelectors("id",rawTokens[i]);
 		var classArray = findSelectors("class", rawTokens[i]);
-		// create the selector
 		var token = {
 				"tagName": getFirstValueFromArray(tagArray),
 				"id" : getFirstValueFromArray(idArray),
@@ -125,32 +149,11 @@ function parser(string) {
 	return tokens;
 }
 
-
-
-  function HTMLCollectionToArray(collection) {
-    var array = [];
-    for ( var i = 0; i < collection.length; i++ )
-        array.push(collection[i]);
-    return array;
-  }
+// Searchers
 
 function searcher(tokens) {
 
-  function onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-
-
-  function matchClassNames(descriptionClassNames, elementClassNames) {
-    console.log("match");
-    // class specified in the css description
-    for (var i = 0; i < descriptionClassNames.length; i++) {
-      if (elementClassNames.indexOf(descriptionClassNames[i]) < 0)
-        return false;
-    }
-    return true;
-  }
-
+	// filter functions
   function filterByTagName(documents, targetTagName) {
 
     if (!documents || documents.length < 1 || !targetTagName)
@@ -227,6 +230,8 @@ function getDOMElementsForASelector(selector, context) {
     return elements;
   }
 
+  // body
+  
   var elements= [document];
 
   for ( var i=0; i< tokens.length; i++) {
@@ -238,3 +243,16 @@ function getDOMElementsForASelector(selector, context) {
   return elements.filter( onlyUnique );;
 
 }
+
+	/////////////////////////////////
+	//
+	// Selector engine
+	//////////////////////////////////
+
+	var CssSelectorEngine =  function (selector) {
+				return searcher(parser(selector));
+		}
+	
+	return CssSelectorEngine;
+
+})();
